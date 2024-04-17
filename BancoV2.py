@@ -1,92 +1,65 @@
-def menu():
-    MENU = """
-[1] Depositar
-[2] Sacar
-[3] Extrato
-[0] Sair
---> """
-    return input(MENU)
+class Banco:
+    def __init__(self):
+        self.saldo = 0
+        self.num_saque = 0
+        self.extrato = ""
 
-def deposito(valor, saldo, extrato):
-    saldo += valor 
-    extrato += f"Depósito de R${valor}\n"
-    return saldo, extrato
-
-def saque(*, saldo, valor, extrato, limite, numero_saque):
-    sem_saldo = valor > saldo
-    sem_limite = valor > limite
-    sem_saque = numero_saque >= 3
-
-    if sem_saldo:
-        print(f"Você não tem saldo suficiente");
-
-    elif sem_limite:
-        print(f"Você ultrapassou o limite máximo de R$500.00");
-
-    elif sem_saque:
-        print("Você ultrapassou o limite de saques");
-
-    elif valor > 0:
-        saldo -= valor
-        extrato += f"Saque R${valor:.2f} realizado \n"
-        numero_saque += 1
-
-    else:
-        print("Operação falhou, o valor digitado é inválido")
-
-    return saldo, extrato
-
-def exibir_extrato(saldo, extrato,):
-    print("\n================ EXTRATO ================")
-    print("Não foram realizadas movimentações." if not extrato else extrato.strip())
-    print(f"\nSaldo: R$ {saldo}")
-    print("==========================================")
-
-def control():
-    saldo = 0
-    limite = 500
-    extrato = ""
-    numero_saque = 0
-    limite_saque = 3
-
-    while True:
-        try:
-            opcao = int(menu())
-        except ValueError:
-            print("Digite um número válido")
-            continue
-
-        if opcao == 1:
-            try:
-                valor = float(input("Digite a quantidade para depositar: "))
-            except ValueError:
-                print("Por favor, insira um valor numérico.")
-                continue
-            saldo, extrato = deposito(valor, saldo, extrato)
-
-        elif opcao == 2:
-            try:
-                valor = float(input("Digite a quantidade para sacar: "))
-            except ValueError:
-                print("Por favor, insira um valor numérico.")
-                continue
-            if valor > 0:
-                saldo, extrato = saque(
-                    valor = valor, 
-                    saldo = saldo, 
-                    limite = limite, 
-                    extrato = extrato, 
-                    numero_saque = numero_saque)
-            else:
-                print("Por favor, insira um valor maior que zero para o saque.")
-
-        elif opcao == 3:
-            exibir_extrato(saldo, extrato,)
-
-        elif opcao == 0:
-            break
-
+    def deposito(self):
+        valor = float(input("Digite o valor que deseja depositar: R$"))
+        
+        if valor > 0:
+            self.saldo += valor
+            self.extrato += f"Depósito de R${valor:.2f} \n"
+            print(f"\n Depósito de R${valor:.2f} realizado com sucesso.")
+        
         else:
-            print("Opção Inválida, tente novamente")
+            print("Valor de depósito inválido. Por favor, insira um valor positivo.")
 
-control()
+    def saque(self):
+        if self.num_saque >= 3:
+            print("Você ultrapassou o limite de de 3 saques diários.")
+            return
+        
+        valor = float(input("Digite o valor que deseja sacar: R$"))
+        if valor < 0:
+            print("Valor digitado inválido, digite um número positivo")
+        elif valor > 500:
+            print("Limite de R$500.00 por saque ultrapassado")
+        elif valor > self.saldo:
+            print("Saldo insuficiente")
+        else:
+            self.saldo -= valor
+            self.num_saque += 1
+            self.extrato += f"Saque de R${valor:.2f} \n"
+            print(f"\n Saque de R${valor} realizado com sucesso")
+
+    def exibir_extrato(self):
+        print("\n================ EXTRATO ================")
+        print("Não foram realizadas movimentações." if not self.extrato else self.extrato)
+        print(f"\nSaldo: R$ {self.saldo}")
+        print("==========================================")
+
+def menu():
+        conta = Banco()
+
+        while True:
+            MENU = """
+            [1] Depositar
+            [2] Sacar
+            [3] Extrato
+            [0] Sair
+            --> """
+            opcao = input(MENU)
+
+            if opcao == '1':
+                conta.deposito()
+            elif opcao == '2':
+                conta.saque()
+            elif opcao == '3':
+                conta.exibir_extrato()
+            elif opcao == '0':
+                break
+            else:
+                print("Digite uma opção válida")
+
+menu()
